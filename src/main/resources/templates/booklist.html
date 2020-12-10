@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head/>
+<body>
+<div th:if="${searchResult}">
+    <label th:text="${searchResult.totalItems}"></label>
+    <div th:each="item: ${searchResult.items}">
+        <span th:text="${item.volumeInfo.title}"></span>
+    </div>
+</div>
+<div th:if="${resultError}">
+    <span th:text="${resultError}"></span>
+</div>
+
+</body>
