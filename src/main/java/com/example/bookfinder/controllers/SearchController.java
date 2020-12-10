@@ -34,7 +34,7 @@ public class SearchController {
 
     @GetMapping("/booklist/{query}")
     public String showBooks(@PathVariable("query") String query, Model model) {
-      populateModel(query, 0, null, model);
+      populateModel(query, 0, 0, model);
         return "booklist.html";
     }
 
@@ -46,11 +46,11 @@ public class SearchController {
 
     @GetMapping("/booklist/{query}/{startIndex}")
     public String showBooks(@PathVariable("query") String query, @PathVariable("startIndex") int startIndex, Model model) {
-        populateModel(query, startIndex, null, model);
+        populateModel(query, startIndex, 0, model);
         return "booklist.html";
     }
 
-    private void populateModel(String query, int startIndex, Integer maxResults, Model model) {
+    private void populateModel(String query, int startIndex, int maxResults, Model model) {
         String errorMessage;
         if (maxResults < 0 || maxResults > 40) {
             errorMessage = String.format("MaxResults must be a number between 0 and 40. Value was  %s", maxResults);
@@ -64,7 +64,7 @@ public class SearchController {
             logger.warn(errorMessage);
             return;
         }
-        else if (maxResults == null ) {
+        else if (maxResults == 0 ) {
             maxResults = 10;
         }
 
