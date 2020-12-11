@@ -78,7 +78,15 @@ public class SearchController {
                 .encode()                                                // Encode any URI items that need to be encoded
                 .toUri();
         SearchResult result = restTemplate.getForObject(targetUrl, SearchResult.class);
+        if(result.getItems() == null || result.getItems().size()==0){
+            errorMessage = String.format("You have specified a start index that was higher than the amount of results Try a lower number.");
+            model.addAttribute("resultError", errorMessage);
+            logger.warn(errorMessage + " Value was " + startIndex);
+            return;
+        }
         model.addAttribute("searchResult", result);
+        model.addAttribute("maxResults",maxResults);
+        model.addAttribute("startIndex",startIndex);
 
     }
 

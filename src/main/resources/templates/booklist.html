@@ -1,15 +1,47 @@
-<!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="en">
-<head/>
-<body>
 <div th:if="${searchResult}">
-    <label th:text="${searchResult.totalItems}"></label>
+     <span th:if="${startIndex >= maxResults}">
+        <input onclick="paginationBackwards()" type="button" value="Go back">
+    </span>
+    <span th:if="${searchResult.totalItems > (startIndex+maxResults)}">
+        <input onclick="paginationForward()" type="button" value="Go forward">
+    </span>
+    <div th:text="'Results: ' + ${searchResult.totalItems}"></div>
     <div th:each="item: ${searchResult.items}">
-        <span th:text="${item.volumeInfo.title}"></span>
+        <div style="height:auto;padding-top: 25px;padding-bottom:25px;border-bottom:1px double black">
+            <div>
+                <img style="width:100px;max-height:180px;padding-right:10px;float:left" th:src="${item.volumeInfo.imageLinks.smallThumbnail}"></img>
+            </div>
+           <div style="padding-left: 110px;">
+               <div th:text="'Title: ' + ${item.volumeInfo.title}"></div>
+               <div>
+                   Authors:
+                   <div th:each="author: ${item.volumeInfo.authors}">
+                       <div th:text="${author}"></div>
+                   </div>
+               </div>
+               <div th:text="'Published: ' + ${item.volumeInfo.publisher} + ' - ' + ${item.volumeInfo.publishedDate}"></div>
+               <div th:utext="'Text snippet: ' + ${item.searchInfo.textSnippet}"></div>
+               <div th:text="'Rating: ' + ${item.volumeInfo.averageRating}"></div>
+
+           </div>
+
+        </div>
     </div>
+    <span th:if="${startIndex >= maxResults}">
+        <input onclick="paginationBackwards()"  type="button" value="Go back">
+    </span>
+    <span th:if="${searchResult.totalItems > (startIndex+maxResults)}">
+        <input  onclick="paginationForward()" type="button" value="Go forward">
+    </span>
+
+    <input id="currentStartIndex" type="hidden" th:value="${startIndex}">
 </div>
 <div th:if="${resultError}">
     <span th:text="${resultError}"></span>
 </div>
 
-</body>
+
+
+
+

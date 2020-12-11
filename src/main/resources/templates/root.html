@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
+</head>
+<body>
+<form id="bookSearch">
+    <input id="queryInput" type="text" name="search" placeholder="search for books">
+    <label for="startIndex">Choose start index</label>
+    <input type="number" id="startIndex" name="startIndex" value="0">
+    <label for="maxResults">Choose number of results:</label>
+    <select name="maxResults" id="maxResults">
+        <option value="10">10</option>
+        <option value="20">20</option>
+        <option value="30">30</option>
+        <option value="40">40</option>
+    </select>
+    <input type="submit">
+    <input id="savedQuery" type="hidden">
+</form>
+<div id="searchResults">
+    this is the search result box
+</div>
+<script>
+    $(document).ready(function () {
+        $('#bookSearch').submit(
+            function (event) {
+                event.preventDefault();
+                var query = $("#queryInput").val();
+                var maxResults = $("#maxResults").val();
+                var startIndex = $("#startIndex").val();
+                if(startIndex == null || startIndex == undefined || startIndex == ""){
+                    startIndex = 0;
+                }
+                searchForBooks(query, maxResults, startIndex);
+            }
+        );
+    })
+
+
+    function searchForBooks(query, maxResults, startIndex) {
+        if(query == ""){
+            alert("You must type a query")
+        }else{
+            $("#savedQuery").val(query);
+            $.get("/booklist/" + query + "/" + startIndex + "/" + maxResults, function (data) {
+                $("#searchResults").html(data);
+
+            });
+        }
+
+    }
+
+    function paginationForward() {
+        const currentIndex = parseInt($("#currentStartIndex").val());
+        const maxResults = parseInt($("#maxResults").val());
+        let newIndex = currentIndex + maxResults;
+        let query = $("#savedQuery").val();
+        searchForBooks(query, maxResults, newIndex);
+    }
+
+    function paginationBackwards() {
+        const currentIndex = parseInt($("#currentStartIndex").val());
+        const maxResults = parseInt($("#maxResults").val());
+        let newIndex = currentIndex - maxResults;
+        let query = $("#savedQuery").val();
+        searchForBooks(query, maxResults, newIndex);
+    }
+
+</script>
+</body>
+
+
+</html>
