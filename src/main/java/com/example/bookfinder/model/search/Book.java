@@ -9,6 +9,8 @@ public class Book {
 
    private VolumeInfo volumeInfo;
 
+   private SearchInfo searchInfo;
+
    public String getId() {
       return id;
    }
@@ -23,5 +25,13 @@ public class Book {
 
    public void setVolumeInfo(VolumeInfo volumeInfo) {
       this.volumeInfo = volumeInfo;
+   }
+
+   public SearchInfo getSearchInfo() {
+      return searchInfo;
+   }
+
+   public void setSearchInfo(SearchInfo searchInfo) {
+      this.searchInfo = searchInfo;
    }
 }
