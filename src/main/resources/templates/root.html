@@ -31,26 +31,38 @@
                 var query = $("#queryInput").val();
                 var maxResults = $("#maxResults").val();
                 var startIndex = $("#startIndex").val();
-                if(startIndex == null || startIndex == undefined || startIndex == ""){
+                if (startIndex == null || startIndex == undefined || startIndex == "") {
                     startIndex = 0;
                 }
                 searchForBooks(query, maxResults, startIndex);
             }
         );
+
+        $(document).on("click", ".bookdetails",
+            function (event) {
+                event.preventDefault();
+                var bookid = $(this).find("input").val();
+                findBookDetails(bookid);
+            }
+        );
     })
 
+    function findBookDetails(id) {
+        $.get("/bookdetails/" + id, function (data) {
+            $("#searchResults").html(data);
+        });
+    }
 
     function searchForBooks(query, maxResults, startIndex) {
-        if(query == ""){
+        if (query == "") {
             alert("You must type a query")
-        }else{
+        } else {
             $("#savedQuery").val(query);
             $.get("/booklist/" + query + "/" + startIndex + "/" + maxResults, function (data) {
                 $("#searchResults").html(data);
 
             });
         }
-
     }
 
     function paginationForward() {

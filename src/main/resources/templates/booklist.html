@@ -8,34 +8,40 @@
     </span>
     <div th:text="'Results: ' + ${searchResult.totalItems}"></div>
     <div th:each="item: ${searchResult.items}">
+
+
         <div style="height:auto;padding-top: 25px;padding-bottom:25px;border-bottom:1px double black">
-            <div th:if="${item.volumeInfo.imageLinks!=null}">
-                <img style="width:100px;max-height:180px;padding-right:10px;float:left" th:src="${item.volumeInfo.imageLinks.smallThumbnail}"></img>
-            </div>
-            <div style="padding-left: 110px;">
-                <div th:text="'Title: ' + ${item.volumeInfo.title}"></div>
-                <div>
-                    Authors:
-                    <div th:each="author: ${item.volumeInfo.authors}">
-                        <div th:text="${author}"></div>
+            <a class="bookdetails" href="#" style="text-decoration: none; color: black;">
+                <input class="bookid" type="hidden" th:value="${item.id}">
+                <div th:if="${item.volumeInfo.imageLinks!=null}">
+                    <img style="width:100px;max-height:180px;padding-right:10px;float:left"
+                         th:src="${item.volumeInfo.imageLinks.smallThumbnail}"></img>
+                </div>
+                <div style="padding-left: 110px;">
+                    <div th:text="'Title: ' + ${item.volumeInfo.title}"></div>
+                    <div>
+                        Authors:
+                        <div th:each="author: ${item.volumeInfo.authors}">
+                            <div th:text="${author}"></div>
+                        </div>
                     </div>
+                    <div th:text="'Published: ' + ${item.volumeInfo.publisher} + ' - ' + ${item.volumeInfo.publishedDate}"></div>
+                    <div th:if="${item.searchInfo!=null}">
+                        <div th:utext="'Text snippet: ' + ${item.searchInfo.textSnippet}"></div>
+                    </div>
+
+                    <div th:text="'Rating: ' + ${item.volumeInfo.averageRating}"></div>
+
                 </div>
-                <div th:text="'Published: ' + ${item.volumeInfo.publisher} + ' - ' + ${item.volumeInfo.publishedDate}"></div>
-                <div th:if="${item.searchInfo!=null}">
-                    <div th:utext="'Text snippet: ' + ${item.searchInfo.textSnippet}"></div>
-                </div>
-
-                <div th:text="'Rating: ' + ${item.volumeInfo.averageRating}"></div>
-
-            </div>
-
+            </a>
         </div>
+
     </div>
     <span th:if="${startIndex >= maxResults}">
-        <input onclick="paginationBackwards()"  type="button" value="Go back">
+        <input onclick="paginationBackwards()" type="button" value="Go back">
     </span>
     <span th:if="${searchResult.totalItems > (startIndex+maxResults)}">
-        <input  onclick="paginationForward()" type="button" value="Go forward">
+        <input onclick="paginationForward()" type="button" value="Go forward">
     </span>
 
     <input id="currentStartIndex" type="hidden" th:value="${startIndex}">

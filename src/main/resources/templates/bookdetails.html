@@ -1,10 +1,47 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>$Title$</title>
-</head>
-<body>
-$END$
-</body>
-</html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<div th:if="${book}">
+    <div style="height:auto;padding-top: 25px;padding-bottom:25px;border-bottom:1px double black">
+        <div th:if="${book.volumeInfo.imageLinks!=null}" style="float:left">
+            <img th:src="${book.volumeInfo.imageLinks.thumbnail}"/>
+            <form th:action="@{/book/subscribe}" id="addBookForm" method="post">
+                <input type="hidden" id="bookId" name="bookId" th:value="${book.id}">
+                <input type="hidden" id="authors" name="authors" th:value="${book.volumeInfo.authors}">
+                <button type="submit">Subscribe to Authors of this book</button>
+            </form>
+        </div>
+        <div style="padding-left: 200px;">
+            <div th:text="'Title: ' + ${book.volumeInfo.title}"></div>
+            <div th:text="'Subtitle: ' + ${book.volumeInfo.subtitle}"></div>
+            <div>
+                Authors:
+                <div th:each="author: ${book.volumeInfo.authors}">
+                    <div th:text="${author}"></div>
+                </div>
+            </div>
+            <div th:text="'Published: ' + ${book.volumeInfo.publisher} + ' - ' + ${book.volumeInfo.publishedDate}"></div>
+            <div th:text="'Description: ' + ${book.volumeInfo.description}"></div>
+            <div th:text="'Pagecount: ' + ${book.volumeInfo.pageCount}"></div>
+            <div th:text="'Print type: ' + ${book.volumeInfo.printType}"></div>
+            <div>
+                Categories:
+                <div th:each="category: ${book.volumeInfo.categories}">
+                    <div th:text="${category}"></div>
+                </div>
+            </div>
+            <div>
+                Book identifier:
+                <div th:each="isbn: ${book.volumeInfo.industryIdentifiers}">
+                    <ul style="display: inline-block;margin:0;">
+                        <li th:text="${isbn.type}"/>
+                        <li th:text="${isbn.identifier}"/>
+                    </ul>
+                </div>
+            </div>
+            <div th:text="'Rating: ' + ${book.volumeInfo.averageRating} + ' - (' + ${book.volumeInfo.ratingsCount} + ')'"></div>
+            <div th:text="'Language: ' + ${book.volumeInfo.language}"></div>
+        </div>
+    </div>
+</div>
+<div th:if="${resultError}">
+    <span th:text="${resultError}"></span>
+</div>
