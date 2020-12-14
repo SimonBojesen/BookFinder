@@ -3,11 +3,10 @@
     <div style="height:auto;padding-top: 25px;padding-bottom:25px;border-bottom:1px double black">
         <div th:if="${book.volumeInfo.imageLinks!=null}" style="float:left">
             <img th:src="${book.volumeInfo.imageLinks.thumbnail}"/>
-            <form th:action="@{/book/subscribe}" id="addBookForm" method="post">
-                <input type="hidden" id="bookId" name="bookId" th:value="${book.id}">
-                <input type="hidden" id="authors" name="authors" th:value="${book.volumeInfo.authors}">
-                <button type="submit">Subscribe to Authors of this book</button>
-            </form>
+            <br/>
+            <input th:attr="data-exists=${exists}" type="hidden" id="bookId" name="bookId" th:value="${book.id}">
+            <button id="subscribe">Subscribe</button>
+            <button id="unsubscribe" style="display: none;">Unsubscribe</button>
         </div>
         <div style="padding-left: 200px;">
             <div th:text="'Title: ' + ${book.volumeInfo.title}"></div>
@@ -19,7 +18,7 @@
                 </div>
             </div>
             <div th:text="'Published: ' + ${book.volumeInfo.publisher} + ' - ' + ${book.volumeInfo.publishedDate}"></div>
-            <div th:text="'Description: ' + ${book.volumeInfo.description}"></div>
+            <div th:utext="'Description: ' + ${book.volumeInfo.description}"></div>
             <div th:text="'Pagecount: ' + ${book.volumeInfo.pageCount}"></div>
             <div th:text="'Print type: ' + ${book.volumeInfo.printType}"></div>
             <div>

@@ -38,6 +38,41 @@
             }
         );
 
+        $(document).on("click", "#subscribe",
+            function (event) {
+                event.preventDefault();
+                ajaxSubscribe("POST")
+            }
+        );
+
+       function ajaxSubscribe(requestType){
+           var id = $("#bookId").val();
+           var bookId = {bookId: id};
+           $.ajax({
+               url: '/book/subscribe',
+               type: requestType,
+               data: bookId,
+               success: function(data) {
+                   $("#subscribe").toggle();
+                   $("#unsubscribe").toggle();
+               },error: function (data){
+                   let errorMessage = "";
+                   if (data.responseJSON.error)
+                       errorMessage = data.responseJSON.error;
+                   else if (data.responseJSON.failed)
+                       errorMessage = data.responseJSON.failed;
+                   alert(errorMessage);
+               }
+           })
+        }
+
+        $(document).on("click", "#unsubscribe",
+            function (event) {
+                event.preventDefault();
+                ajaxSubscribe("DELETE")
+            }
+        );
+
         $(document).on("click", ".bookdetails",
             function (event) {
                 event.preventDefault();
@@ -50,6 +85,11 @@
     function findBookDetails(id) {
         $.get("/bookdetails/" + id, function (data) {
             $("#searchResults").html(data);
+            var exist = $("#bookId").data("exists");
+            if (exist) {
+                $("#subscribe").hide();
+                $("#unsubscribe").show();
+            }
         });
     }
 

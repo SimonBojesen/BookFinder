@@ -16,8 +16,8 @@ public class User {
     private String password;
     private Role role;
     private boolean active;
-    @OneToMany(cascade = CascadeType.ALL)
-    private List<BookDTO> books;
+    @ElementCollection(targetClass = String.class)
+    private List<String> books;
 
     public User(String username, String password) {
         this.username = username;
@@ -75,11 +75,11 @@ public class User {
         this.password = password;
     }
 
-    public List<BookDTO> getBooks() {
+    public List<String> getBooks() {
         return books;
     }
 
-    public void setBooks(List<BookDTO> books) {
+    public void setBooks(List<String> books) {
         this.books = books;
     }
 }
