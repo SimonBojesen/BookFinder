@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
@@ -17,8 +17,11 @@
         <option value="30">30</option>
         <option value="40">40</option>
     </select>
-    <input type="submit">
+    <input type="submit" value="Search">
     <input id="savedQuery" type="hidden">
+</form>
+<form th:action="@{logout}" method="post">
+<button style="float: right">Log Out</button>
 </form>
 <div id="searchResults">
     this is the search result box
@@ -45,26 +48,6 @@
             }
         );
 
-       function ajaxSubscribe(requestType){
-           var id = $("#bookId").val();
-           var bookId = {bookId: id};
-           $.ajax({
-               url: '/book/subscribe',
-               type: requestType,
-               data: bookId,
-               success: function(data) {
-                   $("#subscribe").toggle();
-                   $("#unsubscribe").toggle();
-               },error: function (data){
-                   let errorMessage = "";
-                   if (data.responseJSON.error)
-                       errorMessage = data.responseJSON.error;
-                   else if (data.responseJSON.failed)
-                       errorMessage = data.responseJSON.failed;
-                   alert(errorMessage);
-               }
-           })
-        }
 
         $(document).on("click", "#unsubscribe",
             function (event) {
@@ -81,7 +64,26 @@
             }
         );
     })
-
+    function ajaxSubscribe(requestType){
+        var id = $("#bookId").val();
+        var bookId = {bookId: id};
+        $.ajax({
+            url: '/book/subscribe',
+            type: requestType,
+            data: bookId,
+            success: function(data) {
+                $("#subscribe").toggle();
+                $("#unsubscribe").toggle();
+            },error: function (data){
+                let errorMessage = "";
+                if (data.responseJSON.error)
+                    errorMessage = data.responseJSON.error;
+                else if (data.responseJSON.failed)
+                    errorMessage = data.responseJSON.failed;
+                alert(errorMessage);
+            }
+        })
+    }
     function findBookDetails(id) {
         $.get("/bookdetails/" + id, function (data) {
             $("#searchResults").html(data);
@@ -100,7 +102,6 @@
             $("#savedQuery").val(query);
             $.get("/booklist/" + query + "/" + startIndex + "/" + maxResults, function (data) {
                 $("#searchResults").html(data);
-
             });
         }
     }

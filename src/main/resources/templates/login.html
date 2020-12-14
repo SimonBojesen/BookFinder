@@ -3,12 +3,61 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
+    <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
 </head>
 <body>
+<div class="loginToggle">
     <form th:action="@{login}" method="post">
         <input type="text" name="username" placeholder="type your username">
-        <input type="password" name="password" placeholder="type your password">
-        <button type="submit">submit</button>
+        <input type="password" name="password" id="password" placeholder="type your password">
+        <button id="loginButton" type="submit">submit</button>
     </form>
+    <br/>
+    <button class="formToggle">Sign up</button>
+</div>
+
+<div class="loginToggle" style="display: none;">
+        <input type="text" name="username" id="username" placeholder="type your username">
+        <input type="password" name="password" id="signUpPassword" placeholder="type your password">
+        <input type="password" name="confirmPassword" id="confirmPassword" placeholder="Confirm password">
+        <button id="signUpButton">submit</button>
+        <br/>
+        <br/>
+        <button class="formToggle">Go back to login</button>
+</div>
+<script>
+    $(document).ready(function () {
+        $(".formToggle").click(function (){
+            $(".loginToggle").toggle();
+        })
+
+        $(document).on("click", "#signUpButton",
+            function () {
+                var username = $("#username").val();
+                var password = $("#signUpPassword").val();
+                if($("#signUpPassword").val().length < 4) {
+                    alert("Your password must be atleast 4 characters");
+                    return;
+                }
+
+                if($("#signUpPassword").val().localeCompare($("#confirmPassword").val()) === 0) {
+                    var user = {username: username, password: password};
+                    $.post("/login/createuser", user, function (data) {
+                        $(".loginToggle").toggle();
+                        alert(data.success);
+                    }).fail(function (data){
+                        let errorMessage = "";
+                        if (data.responseJSON.error)
+                            errorMessage = data.responseJSON.error;
+                        else if (data.responseJSON.failed)
+                            errorMessage = data.responseJSON.failed;
+                        alert(errorMessage);
+                    })
+                }
+                else alert("Passwords do not match")
+    });
+
+    });
+</script>
 </body>
 </html>

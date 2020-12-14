@@ -4,7 +4,7 @@ public class AjaxDTO {
 
     private String failed;
     private String error;
-    private String succes;
+    private String success;
 
     public String getFailed() {
         return failed;
@@ -22,11 +22,11 @@ public class AjaxDTO {
         this.error = error;
     }
 
-    public String getSucces() {
-        return succes;
+    public String getSuccess() {
+        return success;
     }
 
-    public void setSucces(String succes) {
-        this.succes = succes;
+    public void setSuccess(String success) {
+        this.success = success;
     }
 }

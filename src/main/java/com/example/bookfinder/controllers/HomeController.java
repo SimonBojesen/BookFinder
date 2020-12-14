@@ -37,10 +37,27 @@ public class HomeController {
     private final RestTemplate restTemplate = new RestTemplate();
 
     @PostMapping("/login/createuser")
-    public ResponseEntity<User> createUser(@RequestBody User user) {
-        User userToCreate = new User(user.getUsername(), encoder.encode(user.getPassword()));
-        userRepository.save(userToCreate);
-        return new ResponseEntity<>(user, HttpStatus.OK);
+    public ResponseEntity<AjaxDTO> createUser(@ModelAttribute User user) {
+        AjaxDTO ajaxDTO = new AjaxDTO();
+        if (userRepository.findByUsername(user.getUsername()) == null) {
+            try {
+                User userToCreate = new User(user.getUsername(), encoder.encode(user.getPassword()));
+                userRepository.save(userToCreate);
+                ajaxDTO.setSuccess("User created you can now login");
+                return new ResponseEntity<>(ajaxDTO, HttpStatus.OK);
+            }
+            catch (Exception e) {
+                ajaxDTO.setError("Error when creating user");
+                logger.error(e.getLocalizedMessage());
+                return new ResponseEntity<>(ajaxDTO, HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+        } else {
+            String errorMessage = String.format("User with username: %s already exist", user.getUsername());
+            ajaxDTO.setFailed(errorMessage);
+            logger.info(errorMessage);
+            return new ResponseEntity<>(ajaxDTO, HttpStatus.CONFLICT);
+        }
+
     }
 
     @GetMapping("/bookdetails/{id}")
@@ -73,7 +90,7 @@ public class HomeController {
             }
             user.getBooks().add(bookId);
             userRepository.save(user);
-            ajaxDTO.setSucces(bookId);
+            ajaxDTO.setSuccess(bookId);
             return new ResponseEntity<>(ajaxDTO, HttpStatus.OK);
         } catch (Exception ex) {
             ajaxDTO.setError("Internal server error: Something went wrong");
@@ -92,9 +109,9 @@ public class HomeController {
                 int i = user.getBooks().indexOf(bookId);
                 user.getBooks().remove(i);
                 userRepository.save(user);
-                ajaxDTO.setSucces(bookId);
+                ajaxDTO.setSuccess(bookId);
                 return new ResponseEntity<>(ajaxDTO, HttpStatus.OK);
-            }catch (Exception ex) {
+            } catch (Exception ex) {
                 ajaxDTO.setError("Internal server error: Something went wrong");
                 logger.error(ex.getLocalizedMessage());
                 return new ResponseEntity<>(ajaxDTO, HttpStatus.INTERNAL_SERVER_ERROR);
@@ -119,6 +136,7 @@ public class HomeController {
         }
         return "login.html";
     }
+
 
     private User getCurrentUser() {
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
