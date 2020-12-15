@@ -1,15 +1,17 @@
 package com.example.bookfinder.controllers;
 
 import com.example.bookfinder.config.Configuration;
+import com.example.bookfinder.kafka.KafkaPriceConsumer;
 import com.example.bookfinder.model.AjaxDTO;
 import com.example.bookfinder.model.login.User;
 import com.example.bookfinder.model.login.UserRepository;
 import com.example.bookfinder.model.search.Book;
+import com.example.bookfinder.model.search.SearchResult;
+import com.google.gson.Gson;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -21,8 +23,12 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Controller
 public class HomeController {
@@ -33,7 +39,7 @@ public class HomeController {
 
     @Autowired
     private PasswordEncoder encoder;
-
+    private Map<String, KafkaPriceConsumer> consumers = new HashMap<>();
     private final RestTemplate restTemplate = new RestTemplate();
 
     @PostMapping("/login/createuser")
@@ -45,8 +51,7 @@ public class HomeController {
                 userRepository.save(userToCreate);
                 ajaxDTO.setSuccess("User created you can now login");
                 return new ResponseEntity<>(ajaxDTO, HttpStatus.OK);
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 ajaxDTO.setError("Error when creating user");
                 logger.error(e.getLocalizedMessage());
                 return new ResponseEntity<>(ajaxDTO, HttpStatus.INTERNAL_SERVER_ERROR);
@@ -137,6 +142,29 @@ public class HomeController {
         return "login.html";
     }
 
+    @GetMapping("/listen")
+    public String startKafkaListener() throws IOException {
+        Gson gson = new Gson();
+        User user = getCurrentUser();
+        String username = user.getUsername();
+        if(user.getBooks() != null && user.getBooks().size()>0){
+            KafkaPriceConsumer consumer = new KafkaPriceConsumer(username);
+            consumer.consume();
+            consumers.put(username,consumer);
+            logger.info("Started consumer for user: " + username);
+            URI targetUrl = UriComponentsBuilder.fromUriString("http://localhost:9000")  // Build the base link
+                    .path("/"+username)
+                    .build()                                                 // Build the URL
+                    .encode()                                                // Encode any URI items that need to be encoded
+                    .toUri();
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON);
+            HttpEntity<String> entity = new HttpEntity<>(gson.toJson(user.getBooks()),headers);
+            String result = restTemplate.postForObject(targetUrl,entity,String.class);
+            System.out.println(result);
+        }
+        return "redirect:/";
+    }
 
     private User getCurrentUser() {
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
