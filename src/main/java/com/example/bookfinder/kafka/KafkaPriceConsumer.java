@@ -1,7 +1,10 @@
 package com.example.bookfinder.kafka;
 
+import com.example.bookfinder.model.prices.Prices;
+import com.example.bookfinder.model.prices.PricesRepository;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,8 +24,10 @@ public class KafkaPriceConsumer {
     private static Logger logger = LoggerFactory.getLogger(KafkaPriceConsumer.class);
     private ConcurrentMessageListenerContainer container;
     private String username;
+    private PricesRepository pricesRepository;
 
-    public KafkaPriceConsumer(String username){
+    public KafkaPriceConsumer(String username, PricesRepository pricesRepository) {
+        this.pricesRepository = pricesRepository;
         this.username = username;
     }
 
@@ -30,11 +35,11 @@ public class KafkaPriceConsumer {
         return container;
     }
 
-    public List<String> getResults() {
-        return results;
-    }
-
-    private List<String> results = new ArrayList<>();
+//    public List<String> getResults() {
+//        return results;
+//    }
+//
+//    private List<String> results = new ArrayList<>();
 
     public void consume() throws IOException {
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
@@ -52,7 +57,19 @@ public class KafkaPriceConsumer {
         ContainerProperties containerProperties = new ContainerProperties(username);
         containerProperties.setMessageListener((MessageListener<String, String>) record -> {
             System.out.println(record.value());
-            results.add(record.value());
+            List<Prices> pricesList = gson.fromJson(record.value(),new TypeToken<List<Prices>>(){}.getType());
+            for(Prices prices : pricesList){
+                Prices oldPrice = pricesRepository.findByBookId(prices.getBookId());
+                if(oldPrice!= null){
+                    oldPrice.setPriceListings(prices.getPriceListings());
+                    pricesRepository.saveAndFlush(oldPrice);
+                }else{
+                    pricesRepository.saveAndFlush(prices);
+                }
+
+            }
+
+//            results.add(record.value());
         });
 
         container = new ConcurrentMessageListenerContainer<>(kafkaConsumerFactory, containerProperties);

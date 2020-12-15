@@ -5,6 +5,7 @@ import com.example.bookfinder.kafka.KafkaPriceConsumer;
 import com.example.bookfinder.model.AjaxDTO;
 import com.example.bookfinder.model.login.User;
 import com.example.bookfinder.model.login.UserRepository;
+import com.example.bookfinder.model.prices.PricesRepository;
 import com.example.bookfinder.model.search.Book;
 import com.example.bookfinder.model.search.SearchResult;
 import com.google.gson.Gson;
@@ -36,6 +37,8 @@ public class HomeController {
     Logger logger = LoggerFactory.getLogger(HomeController.class);
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private PricesRepository pricesRepository;
 
     @Autowired
     private PasswordEncoder encoder;
@@ -148,7 +151,7 @@ public class HomeController {
         User user = getCurrentUser();
         String username = user.getUsername();
         if(user.getBooks() != null && user.getBooks().size()>0){
-            KafkaPriceConsumer consumer = new KafkaPriceConsumer(username);
+            KafkaPriceConsumer consumer = new KafkaPriceConsumer(username,pricesRepository);
             consumer.consume();
             consumers.put(username,consumer);
             logger.info("Started consumer for user: " + username);
