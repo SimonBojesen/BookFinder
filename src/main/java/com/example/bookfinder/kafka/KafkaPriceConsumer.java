@@ -10,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 import org.springframework.kafka.listener.*;
+import org.springframework.scheduling.annotation.Async;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -62,18 +63,15 @@ public class KafkaPriceConsumer {
                 Prices oldPrice = pricesRepository.findByBookId(prices.getBookId());
                 if(oldPrice!= null){
                     oldPrice.setPriceListings(prices.getPriceListings());
+                    oldPrice.setBookTitle(prices.getBookTitle());
                     pricesRepository.saveAndFlush(oldPrice);
                 }else{
                     pricesRepository.saveAndFlush(prices);
                 }
-
             }
-
-//            results.add(record.value());
         });
 
         container = new ConcurrentMessageListenerContainer<>(kafkaConsumerFactory, containerProperties);
-
         container.start();
         System.out.println("Consumed message:" + username);
         logger.info("&&& Message [{}] consumed", username);

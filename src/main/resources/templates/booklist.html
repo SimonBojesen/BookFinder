@@ -14,8 +14,7 @@
             <a class="bookdetails" href="#" style="text-decoration: none; color: black;">
                 <input class="bookid" type="hidden" th:value="${item.id}">
                 <div th:if="${item.volumeInfo.imageLinks!=null}">
-                    <img style="width:100px;max-height:180px;padding-right:10px;float:left"
-                         th:src="${item.volumeInfo.imageLinks.smallThumbnail}"></img>
+                    <img style="width:100px;max-height:180px;padding-right:10px;float:left" th:src="${item.volumeInfo.imageLinks.smallThumbnail}"/>
                 </div>
                 <div style="padding-left: 110px;">
                     <div th:text="'Title: ' + ${item.volumeInfo.title}"></div>

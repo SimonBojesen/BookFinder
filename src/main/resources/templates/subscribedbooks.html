@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
+</head>
+<body>
+
+<div>
+    <div style="float: left; width: 50%;">
+        <form action="/" method="get">
+            <button style="float: right">Back to search</button>
+        </form>
+        <div style="border-bottom: 1px solid grey; padding-top: 20px; padding-bottom: 20px;" th:each="book: ${priceList}">
+            <a th:data-bookid="${book.bookId}" class="bookdetails" href="#" style="text-decoration: none; color: black;">See details</a>
+            <h1 th:text="${book.bookTitle} + ': '"/>
+            <table>
+                <tbody>
+                    <tr th:each="price: ${book.priceListings}">
+                        <td th:text="${price.seller}"></td>
+                        <td th:text="${price.price}"></td>
+                        <td><a th:href="${price.link}">Buy here</a></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div id="bookdetails" style="float:right; width: 50%;"></div>
+</div>
+<script>
+    $(document).ready(function () {
+        $(document).on("click", ".bookdetails",
+            function (event) {
+                event.preventDefault();
+                var bookid = $(event.target).data("bookid");
+                getBookDetails(bookid);
+            }
+        );
+
+        $(document).on("click", "#subscribe",
+            function (event) {
+                event.preventDefault();
+                ajaxSubscribe("POST")
+            }
+        );
+
+        $(document).on("click", "#unsubscribe",
+            function (event) {
+                event.preventDefault();
+                ajaxSubscribe("DELETE")
+            }
+        );
+    })
+
+    function ajaxSubscribe(requestType){
+        var id = $("#bookId").val();
+        var bookId = {bookId: id};
+        $.ajax({
+            url: '/book/subscribe',
+            type: requestType,
+            data: bookId,
+            success: function(data) {
+                $("#subscribe").toggle();
+                $("#unsubscribe").toggle();
+            },error: function (data){
+                let errorMessage = "";
+                if (data.responseJSON.error)
+                    errorMessage = data.responseJSON.error;
+                else if (data.responseJSON.failed)
+                    errorMessage = data.responseJSON.failed;
+                alert(errorMessage);
+            }
+        })
+    }
+    function getBookDetails(id) {
+        $.get("/bookdetails/" + id, function (data) {
+            $("#bookdetails").html(data);
+            var exist = $("#bookId").data("exists");
+            if (exist) {
+                $("#subscribe").hide();
+                $("#unsubscribe").show();
+            }
+        });
+    }
+</script>
+</body>
+</html>

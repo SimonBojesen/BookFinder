@@ -3,7 +3,9 @@ package com.example.bookfinder.controllers;
 import com.example.bookfinder.config.Configuration;
 import com.example.bookfinder.model.login.User;
 import com.example.bookfinder.model.login.UserRepository;
+import com.example.bookfinder.model.search.Book;
 import com.example.bookfinder.model.search.SearchResult;
+import com.example.bookfinder.util.UserUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,10 +25,12 @@ import java.net.URI;
 @Controller
 public class SearchController {
 
-    Logger logger = LoggerFactory.getLogger(SearchController.class);
+    private Logger logger = LoggerFactory.getLogger(SearchController.class);
 
     private final RestTemplate restTemplate = new RestTemplate();
 
+    @Autowired
+    private UserUtil userUtil;
 
     @GetMapping("/search/{query}")
     public SearchResult getBooks(@PathVariable("query") String query) {
@@ -43,19 +47,33 @@ public class SearchController {
     @GetMapping("/booklist/{query}")
     public String showBooks(@PathVariable("query") String query, Model model) {
       populateModel(query, 0, 0, model);
-        return "booklist.html";
+        return "booklist";
     }
 
     @GetMapping("/booklist/{query}/{startIndex}/{maxResults}")
     public String showBooks(@PathVariable("query") String query, @PathVariable("startIndex") int startIndex, @PathVariable("maxResults") Integer maxResults, Model model) {
         populateModel(query, startIndex, maxResults, model);
-        return "booklist.html";
+        return "booklist";
     }
 
     @GetMapping("/booklist/{query}/{startIndex}")
     public String showBooks(@PathVariable("query") String query, @PathVariable("startIndex") int startIndex, Model model) {
         populateModel(query, startIndex, 0, model);
-        return "booklist.html";
+        return "booklist";
+    }
+
+    @GetMapping("/bookdetails/{id}")
+    public String getBookDetails(@PathVariable String id, Model model) {
+        model.addAttribute("exists", userUtil.checkIfBookExists(id, userUtil.getCurrentUser()));
+        URI targetUrl = UriComponentsBuilder.fromUriString("https://www.googleapis.com")  // Build the base link
+                .path("/books/v1/volumes/" + id)                            // Add path
+                .queryParam("key", Configuration.googleApiKey)
+                .build()                                                 // Build the URL
+                .encode()                                                // Encode any URI items that need to be encoded
+                .toUri();
+        Book result = restTemplate.getForObject(targetUrl, Book.class);
+        model.addAttribute("book", result);
+        return "bookdetails";
     }
 
     private void populateModel(String query, int startIndex, int maxResults, Model model) {
