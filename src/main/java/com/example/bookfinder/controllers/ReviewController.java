@@ -67,7 +67,7 @@ public class ReviewController {
             if (googleReviews == null) {
                 logger.warn("No ISBN13 found for bookId: " + bookId);
                 ajaxDTO.setFailed("No review available. Reviews are only available for books with ISBN-13");
-                return new ResponseEntity<>(ajaxDTO, HttpStatus.BAD_REQUEST);
+                return new ResponseEntity<>(ajaxDTO, HttpStatus.NOT_ACCEPTABLE);
             } else {
                 URI targetUrl = UriComponentsBuilder.fromUriString("http://localhost:9010")  // Build the base link
                         .path("/review/average/" + googleReviews.getIsbn13())                            // Add path
@@ -97,10 +97,12 @@ public class ReviewController {
                 .toUri();
         Book result = restTemplate.getForObject(targetUrl, Book.class);
         String isbn13 = null;
-        for (IndustryIdentifiers industryIdentifier : result.getVolumeInfo().getIndustryIdentifiers()) {
-            if (industryIdentifier.getType().equals("ISBN_13")) {
-                isbn13 = industryIdentifier.getIdentifier();
-                break;
+        if(result.getVolumeInfo().getIndustryIdentifiers() != null) {
+            for (IndustryIdentifiers industryIdentifier : result.getVolumeInfo().getIndustryIdentifiers()) {
+                if (industryIdentifier.getType().equals("ISBN_13")) {
+                    isbn13 = industryIdentifier.getIdentifier();
+                    break;
+                }
             }
         }
         if (isbn13 == null) {
@@ -116,11 +118,14 @@ public class ReviewController {
             double googleTotal = googleReviewAmount * googleAverage;
             double result = (total + googleTotal) / (reviewAmount + googleReviewAmount);
             int reviews = reviewAmount + googleReviewAmount;
+            result = Math.round(result * 100.0) / 100.0;
             return new TotalReviewsModel(reviews,result);
 
         }else if(reviewAmount != null && average != null){
+            average = Math.round(average * 100.0) / 100.0;
             return new TotalReviewsModel(reviewAmount,average);
         }else if(googleReviewAmount!= null && googleAverage != null){
+            googleAverage = Math.round(googleAverage * 100.0) / 100.0;
             return new TotalReviewsModel(googleReviewAmount,googleAverage);
         }
         return null;

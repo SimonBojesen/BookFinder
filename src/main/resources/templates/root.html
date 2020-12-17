@@ -3,6 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <style>
+        .checked {
+            color: orange;
+        }
+    </style>
     <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
     <script type='text/javascript' th:src="@{../scripts.js}"></script>
 </head>
@@ -67,20 +73,25 @@
                 event.preventDefault();
                 var bookid = $(this).find("input").val();
                 findBookDetails(bookid);
-            }
-        );
+            });
+
+        $(document).on("submit", "#ratingForm", function (event){
+            event.preventDefault();
+            ajaxRating($("#ISBN_13").text(),$("#ratingSelect").val(), $("#bookId").val());
+        });
     })
-    function ajaxSubscribe(requestType){
+
+    function ajaxSubscribe(requestType) {
         var id = $("#bookId").val();
         var bookId = {bookId: id};
         $.ajax({
             url: '/book/subscribe',
             type: requestType,
             data: bookId,
-            success: function(data) {
+            success: function (data) {
                 $("#subscribe").toggle();
                 $("#unsubscribe").toggle();
-            },error: function (data){
+            }, error: function (data) {
                 let errorMessage = "";
                 if (data.responseJSON.error)
                     errorMessage = data.responseJSON.error;
@@ -90,6 +101,25 @@
             }
         })
     }
+    function ajaxRating(isbn13, rating, id) {
+        var postData = {isbn13: isbn13, rating: rating};
+        $.ajax({
+            url: '/review',
+            type: "POST",
+            data: postData,
+            success: function (data) {
+                findBookDetails(id)
+            }, error: function (data) {
+                let errorMessage = "";
+                if (data.responseJSON.error)
+                    errorMessage = data.responseJSON.error;
+                else if (data.responseJSON.failed)
+                    errorMessage = data.responseJSON.failed;
+                alert(errorMessage);
+            }
+        })
+    }
+
     function findBookDetails(id) {
         $.get("/bookdetails/" + id, function (data) {
             $("#searchResults").html(data);
@@ -98,12 +128,13 @@
                 $("#subscribe").hide();
                 $("#unsubscribe").show();
             }
-
-        }).done(function(){
+        }).done(function () {
             var rating = $(".rating");
             var amount = $(".ratingamount");
-
-            getAverageRating(rating,amount,id);
+            getAverageRating(rating, amount, id);
+            if ($("#ISBN_13").length == 0) {
+                $("#ratingForm").hide();
+            }
         });
     }
 
@@ -114,14 +145,14 @@
             $("#savedQuery").val(query);
             $.get("/booklist/" + query + "/" + startIndex + "/" + maxResults, function (data) {
                 $("#searchResults").html(data);
-            }).done(function(){
+            }).done(function () {
                 var idElements = $(".bookid");
 
-                for(let i = 0;i<idElements.length;i++){
+                for (let i = 0; i < idElements.length; i++) {
                     let id = idElements[i].value;
-                    var rating =$(".bookid[value="+id+"]").parent().find(".rating");
-                    var amount = $(".bookid[value="+id+"]").parent().find('.ratingamount');
-                    getAverageRating(rating,amount,id);
+                    var rating = $(".bookid[value=" + id + "]").parent().find(".rating");
+                    var amount = $(".bookid[value=" + id + "]").parent().find('.ratingamount');
+                    getAverageRating(rating, amount, id);
                 }
 
             });

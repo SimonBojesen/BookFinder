@@ -32,13 +32,24 @@
                 <div th:each="isbn: ${book.volumeInfo.industryIdentifiers}">
                     <ul style="display: inline-block;margin:0;">
                         <li th:text="${isbn.type}"/>
-                        <li th:text="${isbn.identifier}"/>
+                        <li th:id="${isbn.type}" th:text="${isbn.identifier}"/>
                     </ul>
                 </div>
             </div>
+            <div th:text="'Language: ' + ${book.volumeInfo.language}"></div>
             <div class="rating" ></div>
             <span style="white-space:nowrap;" class="ratingamount"></span>
-            <div th:text="'Language: ' + ${book.volumeInfo.language}"></div>
+            <form id="ratingForm">
+                <label for="ratingSelect">Choose a Rating:</label>
+                <select name="rating" id="ratingSelect">
+                    <option value="ONE">&#11088;</option>
+                    <option value="TWO">&#11088;&#11088;</option>
+                    <option value="THREE">&#11088;&#11088;&#11088;</option>
+                    <option value="FOUR">&#11088;&#11088;&#11088;&#11088;</option>
+                    <option value="FIVE">&#11088;&#11088;&#11088;&#11088;&#11088;</option>
+                </select>
+                <input type="submit" value="Add rating">
+            </form>
         </div>
     </div>
 </div>
