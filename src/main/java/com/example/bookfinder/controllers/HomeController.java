@@ -87,7 +87,7 @@ public class HomeController {
         //  async
         userUtil.listenAsync(user);
 
-        return "redirect:/";
+        return "redirect:/booklist";
     }
 
     private boolean isAuthenticated() {
