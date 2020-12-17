@@ -1,37 +1,22 @@
 package com.example.bookfinder.controllers;
 
-import com.example.bookfinder.config.Configuration;
-import com.example.bookfinder.kafka.KafkaPriceConsumer;
 import com.example.bookfinder.model.AjaxDTO;
 import com.example.bookfinder.model.login.User;
 import com.example.bookfinder.model.login.UserRepository;
-import com.example.bookfinder.model.prices.PricesRepository;
-import com.example.bookfinder.model.search.Book;
-import com.example.bookfinder.model.search.SearchResult;
 import com.example.bookfinder.util.UserUtil;
-import com.google.gson.Gson;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.RestTemplate;
-import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.IOException;
-import java.net.URI;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 @Controller
 public class HomeController {
@@ -85,7 +70,7 @@ public class HomeController {
     public String startKafkaListener() throws IOException {
         User user = userUtil.getCurrentUser();
         //  async
-        userUtil.listenAsync(user);
+        userUtil.listen(user);
 
         return "redirect:/booklist";
     }

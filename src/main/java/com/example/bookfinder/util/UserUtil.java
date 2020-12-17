@@ -55,7 +55,7 @@ public class UserUtil {
         return false;
     }
 
-    public void listenAsync(User user) throws IOException {
+    public void listen(User user) throws IOException {
         Gson gson = new Gson();
         String username = user.getUsername();
         if(user.getBooks() != null && user.getBooks().size()>0){

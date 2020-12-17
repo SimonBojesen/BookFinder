@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <title>Title</title>
     <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
+    <script type='text/javascript' th:src="@{../scripts.js}"></script>
 </head>
 <body>
 <form id="bookSearch">
@@ -97,6 +98,12 @@
                 $("#subscribe").hide();
                 $("#unsubscribe").show();
             }
+
+        }).done(function(){
+            var rating = $(".rating");
+            var amount = $(".ratingamount");
+
+            getAverageRating(rating,amount,id);
         });
     }
 
@@ -107,6 +114,16 @@
             $("#savedQuery").val(query);
             $.get("/booklist/" + query + "/" + startIndex + "/" + maxResults, function (data) {
                 $("#searchResults").html(data);
+            }).done(function(){
+                var idElements = $(".bookid");
+
+                for(let i = 0;i<idElements.length;i++){
+                    let id = idElements[i].value;
+                    var rating =$(".bookid[value="+id+"]").parent().find(".rating");
+                    var amount = $(".bookid[value="+id+"]").parent().find('.ratingamount');
+                    getAverageRating(rating,amount,id);
+                }
+
             });
         }
     }

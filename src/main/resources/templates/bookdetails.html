@@ -36,7 +36,8 @@
                     </ul>
                 </div>
             </div>
-            <div th:text="'Rating: ' + ${book.volumeInfo.averageRating} + ' - (' + ${book.volumeInfo.ratingsCount} + ')'"></div>
+            <div class="rating" ></div>
+            <span style="white-space:nowrap;" class="ratingamount"></span>
             <div th:text="'Language: ' + ${book.volumeInfo.language}"></div>
         </div>
     </div>

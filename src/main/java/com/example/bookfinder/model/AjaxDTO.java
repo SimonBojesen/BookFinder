@@ -5,6 +5,7 @@ public class AjaxDTO {
     private String failed;
     private String error;
     private String success;
+    private Object model;
 
     public String getFailed() {
         return failed;
@@ -28,5 +29,13 @@ public class AjaxDTO {
 
     public void setSuccess(String success) {
         this.success = success;
+    }
+
+    public Object getModel() {
+        return model;
+    }
+
+    public void setModel(Object model) {
+        this.model = model;
     }
 }
