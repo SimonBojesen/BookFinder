@@ -10,8 +10,8 @@ public class Configuration {
     private static final String docker = "host.docker.internal";
 
     public static final String googleApiKey = "AIzaSyAlU87x4nTCbHZWWKpUQCicuFUXG-lAq9s";
-    public static final String bookReviewApi = "http://" + localhost + ":9010";
-    public static final String bookAlert = "http://" + localhost + ":9000";
-    public static final String kafkaServer = localhost + ":9092";
+    public static final String bookReviewApi = "http://" + docker + ":9010";
+    public static final String bookAlert = "http://" + docker + ":9000";
+    public static final String kafkaServer = docker + ":9092";
 
 }
