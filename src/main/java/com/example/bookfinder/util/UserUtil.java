@@ -1,5 +1,6 @@
 package com.example.bookfinder.util;
 
+import com.example.bookfinder.config.Configuration;
 import com.example.bookfinder.controllers.HomeController;
 import com.example.bookfinder.kafka.KafkaPriceConsumer;
 import com.example.bookfinder.model.login.User;
@@ -55,7 +56,7 @@ public class UserUtil {
         return false;
     }
 
-    public void listen(User user) throws IOException {
+    public void listenToKafka(User user) throws IOException {
         Gson gson = new Gson();
         String username = user.getUsername();
         if(user.getBooks() != null && user.getBooks().size()>0){
@@ -63,7 +64,7 @@ public class UserUtil {
             consumer.consume();
             consumers.put(username,consumer);
             logger.info("Started consumer for user: " + username);
-            URI targetUrl = UriComponentsBuilder.fromUriString("http://localhost:9000")  // Build the base link
+            URI targetUrl = UriComponentsBuilder.fromUriString(Configuration.bookAlert)  // Build the base link
                     .path("/"+username)
                     .build()                                                 // Build the URL
                     .encode()                                                // Encode any URI items that need to be encoded

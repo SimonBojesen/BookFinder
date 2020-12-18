@@ -34,7 +34,7 @@ public class ReviewController {
         if (model != null) {
             try {
                 String json = gson.toJson(model);
-                URI targetUrl = UriComponentsBuilder.fromUriString("http://localhost:9010")  // Build the base link
+                URI targetUrl = UriComponentsBuilder.fromUriString(Configuration.bookReviewApi)  // Build the base link
                         .path("/review/")                            // Add path
                         .build()                                                 // Build the URL
                         .encode()                                                // Encode any URI items that need to be encoded
@@ -69,7 +69,7 @@ public class ReviewController {
                 ajaxDTO.setFailed("No review available. Reviews are only available for books with ISBN-13");
                 return new ResponseEntity<>(ajaxDTO, HttpStatus.NOT_ACCEPTABLE);
             } else {
-                URI targetUrl = UriComponentsBuilder.fromUriString("http://localhost:9010")  // Build the base link
+                URI targetUrl = UriComponentsBuilder.fromUriString(Configuration.bookReviewApi)  // Build the base link
                         .path("/review/average/" + googleReviews.getIsbn13())                            // Add path
                         .build()                                                 // Build the URL
                         .encode()                                                // Encode any URI items that need to be encoded

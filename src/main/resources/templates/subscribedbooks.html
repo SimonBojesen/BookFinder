@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <title>Title</title>
     <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
+    <script type='text/javascript' th:src="@{../scripts.js}"></script>
 </head>
 <body>
 
@@ -34,7 +35,7 @@
             function (event) {
                 event.preventDefault();
                 var bookid = $(event.target).data("bookid");
-                getBookDetails(bookid);
+                findBookDetails(bookid, "#bookdetails");
             }
         );
 
@@ -51,38 +52,13 @@
                 ajaxSubscribe("DELETE")
             }
         );
-    })
 
-    function ajaxSubscribe(requestType){
-        var id = $("#bookId").val();
-        var bookId = {bookId: id};
-        $.ajax({
-            url: '/book/subscribe',
-            type: requestType,
-            data: bookId,
-            success: function(data) {
-                $("#subscribe").toggle();
-                $("#unsubscribe").toggle();
-            },error: function (data){
-                let errorMessage = "";
-                if (data.responseJSON.error)
-                    errorMessage = data.responseJSON.error;
-                else if (data.responseJSON.failed)
-                    errorMessage = data.responseJSON.failed;
-                alert(errorMessage);
-            }
-        })
-    }
-    function getBookDetails(id) {
-        $.get("/bookdetails/" + id, function (data) {
-            $("#bookdetails").html(data);
-            var exist = $("#bookId").data("exists");
-            if (exist) {
-                $("#subscribe").hide();
-                $("#unsubscribe").show();
-            }
+        $(document).on("submit", "#ratingForm", function (event){
+            event.preventDefault();
+            ajaxRating($("#ISBN_13").text(),$("#ratingSelect").val(), $("#bookId").val());
         });
-    }
+
+    })
 </script>
 </body>
 </html>

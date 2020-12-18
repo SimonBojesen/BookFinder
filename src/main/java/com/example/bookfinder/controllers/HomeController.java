@@ -70,7 +70,7 @@ public class HomeController {
     public String startKafkaListener() throws IOException {
         User user = userUtil.getCurrentUser();
         //  async
-        userUtil.listen(user);
+        userUtil.listenToKafka(user);
 
         return "redirect:/booklist";
     }

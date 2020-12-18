@@ -1,5 +1,6 @@
 package com.example.bookfinder.kafka;
 
+import com.example.bookfinder.config.Configuration;
 import com.example.bookfinder.model.prices.Prices;
 import com.example.bookfinder.model.prices.PricesRepository;
 import com.google.gson.Gson;
@@ -45,7 +46,7 @@ public class KafkaPriceConsumer {
     public void consume() throws IOException {
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
         Map<String, Object> consumerConfig = Map.of(
-                BOOTSTRAP_SERVERS_CONFIG, "localhost:9092",
+                BOOTSTRAP_SERVERS_CONFIG, Configuration.kafkaServer,
                 GROUP_ID_CONFIG, "test-consumer-group"
         );
 

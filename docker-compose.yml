@@ -1,0 +1,57 @@
+version: "3"
+services:
+  database:
+    image: mongo
+    ports:
+      - "27017:27017"
+    networks:
+      - book-finder
+  reviewapi:
+    image: abenhansen/bookreviewapi
+    networks:
+      - book-finder
+    ports:
+      - "9010:9010"
+    depends_on:
+      - monolith
+      - database
+
+  monolith:
+    image: abenhansen/bookfinder
+    ports:
+      - "8080:8080"
+    networks:
+      - book-finder
+
+  pricealert:
+    image: abenhansen/pricealert
+    ports:
+      - "9000:9000"
+    networks:
+      - book-finder
+    depends_on:
+      - kafka
+      - zookeeper
+      - monolith
+
+  zookeeper:
+    image: wurstmeister/zookeeper
+    ports:
+      - "2181:2181"
+    networks:
+      - book-finder
+
+  kafka:
+    image: wurstmeister/kafka
+    ports:
+      - "9092:9092"
+    networks:
+      - book-finder
+    depends_on:
+      - zookeeper
+    environment:
+      KAFKA_ADVERTISED_HOST_NAME: host.docker.internal
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+
+networks:
+  book-finder:
