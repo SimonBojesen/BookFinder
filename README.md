@@ -28,6 +28,7 @@ can make for the users of the platform.
 5. Rating system that makes it possible for a user to rate a book 1-5 stars after having read it. These rating’s are shown on search pages as an average rating that is calculated by combining the ratings from our system and the ratings on Google Books.
 
 Reflection on other systems that we thought of:
+
 6. Geolocation system to help discover places to buy the book physically near you. This helps users locate physical bookstores near the user where you can go and look at the books in hand if the user is unsure if he wants to buy it from the data we provide.
 
 7. Want-to-read list system, meaning a  list the user can use to collect all the books they have read. This feature helps the user organize the books they have read in one place, which might help if you have read hundreds of books. This also ties into the next needed feature.
