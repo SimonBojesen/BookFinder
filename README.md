@@ -41,4 +41,4 @@ These eight main subsystems are the ones we would have liked to make. Unfortunat
 
 ## Business Process Models and Descriptions
 
-
+![Book Search Process](/images/booksearch-scenario.png "booksearch-scenario.png").
